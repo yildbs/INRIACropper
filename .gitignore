@@ -1,0 +1,4 @@
+*tgz
+output/*
+*jpg
+**/*.jpg

@@ -7,6 +7,7 @@ if __name__ == "__main__":
     # Absolute path recommended
     annotations_path = '/home/yildbs/Data/INRIA/Train_original/annotations/'
     images_path = '/home/yildbs/Data/INRIA/Train_original/pos/'
+    save_path = './output/'
 
     image_name_list = glob.glob(images_path+'/*.png')
 
@@ -84,9 +85,14 @@ if __name__ == "__main__":
 
                     cropped = []
                     cropped = image[y1:y2, x1:x2,:]
-                    cv2.imshow('cropped_'+str(idx), cropped)
-                cv2.imshow('image', image)
-                cv2.waitKey(0)
+                    # cv2.imshow('cropped_'+str(idx), cropped)
+
+                    save_filename = save_path + image_name + '_cropped_' + '%06d' % idx + '.jpg'
+                    cv2.imwrite(save_filename, cropped)
+                    print('Cropped image is saved at ', save_filename)
+
+                # cv2.imshow('image', image)
+                # cv2.waitKey(1)
             except:
                 pass
 
