@@ -9,7 +9,6 @@ def get_part_image(part, rect, image, offset=0):
     if offset == 0:
         offset = [0, 0, 0, 0]
 
-    offset_x1, offset_y1, offset_x2, offset_y2 = offset
     relative_position_of_part = {}
     relative_position_of_part['head'] = [0.3, 0.0, 0.7, 0.2]
     relative_position_of_part['upper_body'] = [0.0, 0.0, 1.0, 0.5]
@@ -99,7 +98,6 @@ def make_db(annotations_path, images_path, save_path):
             image = cv2.imread(images_path + '/' + image_name + '.png')
 
             try:
-                # cv2.destroyAllWindows()
                 for idx, rect in zip(range(9999), rects):
                     parts = ['head', 'upper_body', 'lower_body', 'full_body', 'full_body_head']
                     offsets = {}
@@ -118,36 +116,36 @@ def make_db(annotations_path, images_path, save_path):
                         for part in parts:
                             for offset in offsets.keys():
                                 cropped = get_part_image(part, rect, image, offsets[offset])
-                                # cv2.imshow(part, cropped)
-                                # cv2.waitKey(1)
                                 save_filename = save_path + '/' + part + '/' + 'cropped_' + image_name + '_' + offset + '.jpg'
                                 try:
                                     os.makedirs(save_filename[:save_filename.rfind('/')])
                                 except:
                                     pass
                                 cv2.imwrite(save_filename, cropped)
-                                # print('Cropped image is saved at ', save_filename)
                     except:
                         pass
-
-                    # cv2.waitKey(0)
-
             except:
                 pass
-
-
 
 if __name__ == "__main__":
 
     print('Current working directory : ', os.getcwd())
 
+    print('Saving start !')
     # Absolute path recommended
     annotations_path = '/home/yildbs/Data/INRIA/Train_original/annotations/'
     images_path = '/home/yildbs/Data/INRIA/Train_original/pos/'
     save_path = './output_train/'
     make_db(annotations_path, images_path, save_path)
+    print('Saving end')
 
+    print('Saving start !')
+    # Absolute path recommended
     annotations_path = '/home/yildbs/Data/INRIA/Test_original/annotations/'
     images_path = '/home/yildbs/Data/INRIA/Test_original/pos/'
     save_path = './output_test/'
     make_db(annotations_path, images_path, save_path)
+    print('Saving end')
+
+    print('Program end')
+
