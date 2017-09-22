@@ -9,20 +9,13 @@ def get_part_image(part, rect, image, offset=0):
     if offset == 0:
         offset = [0, 0, 0, 0]
 
-    relative_position_of_part = {}
-    relative_position_of_part['head'] = [0.3, 0.0, 0.7, 0.2]
-    relative_position_of_part['upper_body'] = [0.0, 0.0, 1.0, 0.5]
-    relative_position_of_part['lower_body'] = [0.0, 0.5, 1.0, 1.0]
-    relative_position_of_part['full_body'] = [0.0, 0.0, 1.0, 1.0]
-    relative_position_of_part['full_body_with_head'] = [0.0, 0.2, 1.0, 1.0]
-
     rect_width = org_x2 - org_x1
     rect_height = org_y2 - org_y1
 
-    relative_position_of_part_x1 = relative_position_of_part[part][0]
-    relative_position_of_part_y1 = relative_position_of_part[part][1]
-    relative_position_of_part_x2 = relative_position_of_part[part][2]
-    relative_position_of_part_y2 = relative_position_of_part[part][3]
+    relative_position_of_part_x1 = part[0]
+    relative_position_of_part_y1 = part[1]
+    relative_position_of_part_x2 = part[2]
+    relative_position_of_part_y2 = part[3]
 
     x1 = org_x1 + rect_width * relative_position_of_part_x1
     y1 = org_y1 + rect_height * relative_position_of_part_y1
@@ -99,7 +92,15 @@ def make_db(annotations_path, images_path, save_path):
 
             try:
                 for idx, rect in zip(range(9999), rects):
-                    parts = ['head', 'upper_body', 'lower_body', 'full_body', 'full_body_head']
+                    parts = {}
+                    parts['head'] = [0.3, 0.0, 0.7, 0.2]
+                    parts['upper_body'] = [0.0, 0.0, 1.0, 0.5]
+                    parts['upper_body_above_knee'] = [0.0, 0.0, 1.0, 0.75]
+                    parts['lower_body_under_shoulder'] = [0.0, 0.3, 1.0, 1.0]
+                    parts['lower_body'] = [0.0, 0.5, 1.0, 1.0]
+                    parts['full_body'] = [0.0, 0.0, 1.0, 1.0]
+                    parts['full_body_without_head'] = [0.0, 0.2, 1.0, 1.0]
+
                     offsets = {}
                     offsets['center'] = [0., 0., 0., 0.]
                     offsets['broad'] = [-0.1, -0.1, 0.1, 0.1]
@@ -113,9 +114,9 @@ def make_db(annotations_path, images_path, save_path):
                     offsets['right_bot'] = [0.1, 0.05, 0.1, 0.05]
                     images = []
                     try:
-                        for part in parts:
+                        for part in parts.keys():
                             for offset in offsets.keys():
-                                cropped = get_part_image(part, rect, image, offsets[offset])
+                                cropped = get_part_image(parts[part], rect, image, offsets[offset])
                                 save_filename = save_path + '/' + part + '/' + 'cropped_' + image_name + '_' + offset + '.jpg'
                                 try:
                                     os.makedirs(save_filename[:save_filename.rfind('/')])
