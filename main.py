@@ -30,15 +30,22 @@ def get_part_image(part, rect, image, offset=0):
     x2 += rect_width * offset[2]
     y2 += rect_height * offset[3]
 
-    rect_width = x2 - x1
-    rect_height = y2 - y1
-    center_x = (x1 + x2) / 2
-    center_y = (y1 + y2) / 2
-
     image_width = image.shape[1]
     image_height = image.shape[0]
 
+    rect_width = x2 - x1
+    rect_height = y2 - y1
+
+    center_x = (x1 + x2) / 2
+    center_y = (y1 + y2) / 2
+
     rect_size = int(max(rect_width, rect_height))
+
+    if rect_size >= image_width:
+        raise 'image_width is too small to crop'
+    if rect_size >= image_height:
+        raise 'image_width is too small to crop'
+
     x1 = int(center_x - rect_size / 2)
     x2 = int(center_x + rect_size / 2)
     y1 = int(center_y - rect_size / 2)
@@ -50,11 +57,6 @@ def get_part_image(part, rect, image, offset=0):
     if x2 > image_width - 1:
         x1 = x1 - (x2 - (image_width - 1))
         x2 = x2 - (x2 - (image_width - 1))
-
-    if x1 < 0:
-        raise 'image_width is too small to crop'
-    if x2 > image_width - 1:
-        raise 'image_width is too small to crop'
 
     if y1 < 0:
         y2 = y2 - y1  # x1 - x1
@@ -103,7 +105,7 @@ def make_db(annotations_path, images_path, save_path):
 
                     offsets = {}
                     offsets['center'] = [0., 0., 0., 0.]
-                    offsets['broad'] = [-0.1, -0.1, 0.1, 0.1]
+                    offsets['wide'] = [-0.1, -0.1, 0.1, 0.1]
                     offsets['left'] = [-0.1, 0., -0.1, 0.]
                     offsets['right'] = [0.1, 0., 0.1, 0.]
                     offsets['top'] = [0., -0.05, 0., -0.05]
