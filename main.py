@@ -53,20 +53,23 @@ def get_human_part_image(part, rect, image, offset=0):
     y2 = int(center_y + rect_size / 2)
 
     if x1 < 0:
-        x2 = x2 - x1
-        x1 = 0  # x1 - x1
+        raise 'image_width is too small to crop'
+        # x2 = x2 - x1
+        # x1 = 0  # x1 - x1
     if x2 > image_width - 1:
-        x1 = x1 - (x2 - (image_width - 1))
-        x2 = x2 - (x2 - (image_width - 1))
+        raise 'image_width is too small to crop'
+        # x1 = x1 - (x2 - (image_width - 1))
+        # x2 = x2 - (x2 - (image_width - 1))
 
     if y1 < 0:
-        y2 = y2 - y1  # x1 - x1
-        y1 = 0  # y1 - y1
+        raise 'image_width is too small to crop'
+        # y2 = y2 - y1  # x1 - x1
+        # y1 = 0  # y1 - y1
     if y2 > image_height - 1:
-        y1 = y1 - (y2 - (image_height - 1))
-        y2 = y2 - (y2 - (image_height - 1))
+        raise 'image_width is too small to crop'
+        # y1 = y1 - (y2 - (image_height - 1))
+        # y2 = y2 - (y2 - (image_height - 1))
 
-    cropped = []
     cropped = image[y1:y2, x1:x2, :]
     return cropped
 
@@ -107,20 +110,20 @@ def crop_and_save_as_human_parts(annotations_path, images_path, save_path):
                     offsets = {}
                     offsets['center'] = [0., 0., 0., 0.]
                     offsets['wide'] = [-0.1, -0.1, 0.1, 0.1]
-                    offsets['left'] = [-0.1, 0., -0.1, 0.]
-                    offsets['right'] = [0.1, 0., 0.1, 0.]
+                    offsets['left'] = [-0.7, 0., -0.7, 0.]
+                    offsets['right'] = [0.7, 0., 0.7, 0.]
                     offsets['top'] = [0., -0.05, 0., -0.05]
                     offsets['bot'] = [0., 0.05, 0., 0.05]
-                    offsets['left_top'] = [-0.1, -0.05, -0.1, -0.05]
-                    offsets['right_top'] = [0.1, -0.05, 0.1, -0.05]
-                    offsets['left_bot'] = [-0.1, 0.05, -0.1, 0.05]
-                    offsets['right_bot'] = [0.1, 0.05, 0.1, 0.05]
+                    offsets['left_top'] = [-0.7, -0.05, -0.7, -0.05]
+                    offsets['right_top'] = [0.7, -0.05, 0.7, -0.05]
+                    offsets['left_bot'] = [-0.7, 0.05, -0.7, 0.05]
+                    offsets['right_bot'] = [0.7, 0.05, 0.7, 0.05]
                     images = []
                     try:
                         for part in parts.keys():
                             for offset in offsets.keys():
                                 cropped = get_human_part_image(parts[part], rect, image, offsets[offset])
-                                save_filename = save_path + '/' + part + '/' + 'cropped_' + image_name + '_' + offset + '.jpg'
+                                save_filename = save_path + '/' + part + '_' + offset + '/' + 'cropped_' + image_name + '_' + offset + '.jpg'
                                 try:
                                     os.makedirs(save_filename[:save_filename.rfind('/')])
                                 except:
@@ -144,7 +147,12 @@ def crop_and_save_as_random(images_path, save_path):
 
         cv2.imshow('image', image)
 
-        for idx in range(100):
+        num_total_images = 0
+        num_total_images += int((image_width / 30) * (image_height / 30))
+        num_total_images += int((image_width / 70) * (image_height / 70))
+        num_total_images += int((image_width / 100) * (image_height / 100))
+
+        for idx in range(num_total_images):
             rect_size = random.randint(min_size, max_size)
             x = random.randint(0, image_width - rect_size - 1)
             y = random.randint(0, image_height - rect_size - 1)
@@ -166,7 +174,7 @@ if __name__ == "__main__":
     # Absolute path recommended
     annotations_path = '/home/yildbs/Data/INRIA/Train_original/annotations/'
     images_path = '/home/yildbs/Data/INRIA/Train_original/pos/'
-    save_path = './output_train_pos/'
+    save_path = './train/'
     crop_and_save_as_human_parts(annotations_path, images_path, save_path)
     print('Saving end')
 
@@ -174,19 +182,19 @@ if __name__ == "__main__":
     # Absolute path recommended
     annotations_path = '/home/yildbs/Data/INRIA/Test_original/annotations/'
     images_path = '/home/yildbs/Data/INRIA/Test_original/pos/'
-    save_path = './output_test_pos/'
+    save_path = './test/'
     crop_and_save_as_human_parts(annotations_path, images_path, save_path)
     print('Saving end')
 
     print('Saving start !')
     images_path = '/home/yildbs/Data/INRIA/Train_original/neg/'
-    save_path = './output_train_neg/'
+    save_path = './train/background/'
     crop_and_save_as_random(images_path, save_path)
     print('Saving end')
 
     print('Saving start !')
     images_path = '/home/yildbs/Data/INRIA/Test_original/neg/'
-    save_path = './output_text_neg/'
+    save_path = './test/background'
     crop_and_save_as_random(images_path, save_path)
     print('Saving end')
 
